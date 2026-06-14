@@ -1,17 +1,25 @@
-import Link from "next/link";
 import { AppImage } from "@/components/ui/AppImage";
 import { PlusIcon } from "@/modules/feed/components/icons";
 import { DESKTOP_STORIES, MOBILE_STORIES } from "@/modules/feed/data/mock";
+import Link from "next/link";
 
 export function StoryCarousel() {
   return (
     <>
-
       <div className="_feed_inner_ppl_card _mar_b16">
         <div className="_feed_inner_story_arrow">
           <button type="button" className="_feed_inner_story_arrow_btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="8" fill="none" viewBox="0 0 9 8">
-              <path fill="#fff" d="M8 4l.366-.341.318.341-.318.341L8 4zm-7 .5a.5.5 0 010-1v1zM5.566.659l2.8 3-.732.682-2.8-3L5.566.66zm2.8 3.682l-2.8 3-.732-.682 2.8-3 .732.682zM8 4.5H1v-1h7v1z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="9"
+              height="8"
+              fill="none"
+              viewBox="0 0 9 8"
+            >
+              <path
+                fill="#fff"
+                d="M8 4l.366-.341.318.341-.318.341L8 4zm-7 .5a.5.5 0 010-1v1zM5.566.659l2.8 3-.732.682-2.8-3L5.566.66zm2.8 3.682l-2.8 3-.732-.682 2.8-3 .732.682zM8 4.5H1v-1h7v1z"
+              />
             </svg>
           </button>
         </div>
@@ -36,7 +44,7 @@ export function StoryCarousel() {
                       />
                       <div className="_feed_inner_story_txt">
                         <div className="_feed_inner_story_btn">
-                          <button className="_feed_inner_story_btn_link">
+                          <button className="_feed_inner_story_btn_link flex justify-center items-center">
                             <PlusIcon />
                           </button>
                         </div>
@@ -93,9 +101,23 @@ export function StoryCarousel() {
                         className="_card_story_img"
                       />
                       <div className="_feed_inner_ppl_btn">
-                        <button className="_feed_inner_ppl_btn_link" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 12 12">
-                            <path stroke="#fff" strokeLinecap="round" strokeLinejoin="round" d="M6 2.5v7M2.5 6h7" />
+                        <button
+                          className="_feed_inner_ppl_btn_link"
+                          type="button"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            fill="none"
+                            viewBox="0 0 12 12"
+                          >
+                            <path
+                              stroke="#fff"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 2.5v7M2.5 6h7"
+                            />
                           </svg>
                         </button>
                       </div>

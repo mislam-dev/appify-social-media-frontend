@@ -1,13 +1,13 @@
 "use client";
 
+import { feedService } from "@/modules/feed/services/feed.service";
+import type { CreatePostInput, Post } from "@/modules/feed/types";
+import type { Paginated } from "@/modules/shared/types";
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { feedService } from "@/modules/feed/services/feed.service";
-import type { CreatePostInput, Post } from "@/modules/feed/types";
-import type { Paginated } from "@/modules/shared/types";
 
 export const feedKeys = {
   all: ["feed"] as const,

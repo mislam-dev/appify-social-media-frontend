@@ -2,15 +2,15 @@
 
 import { cn } from "@/lib/utils/cn";
 import { useFeedUiStore } from "@/modules/feed/store/ui.store";
-import { ThemeToggle } from "@/modules/feed/components/ThemeToggle";
-import { Header } from "@/modules/feed/components/Header";
-import { MobileMenu } from "@/modules/feed/components/MobileMenu";
-import { MobileBottomNav } from "@/modules/feed/components/MobileBottomNav";
-import { LeftSidebar } from "@/modules/feed/components/LeftSidebar";
-import { StoryCarousel } from "@/modules/feed/components/StoryCarousel";
-import { PostComposer } from "@/modules/feed/components/PostComposer";
-import { PostList } from "@/modules/feed/components/PostList";
-import { RightSidebar } from "@/modules/feed/components/RightSidebar";
+import { ThemeToggle } from "@/modules/feed/components/layout/ThemeToggle";
+import { Header } from "@/modules/feed/components/layout/Header";
+import { MobileMenu } from "@/modules/feed/components/layout/MobileMenu";
+import { MobileBottomNav } from "@/modules/feed/components/layout/MobileBottomNav";
+import { LeftSidebar } from "@/modules/feed/components/layout/LeftSidebar";
+import { StoryCarousel } from "@/modules/feed/components/post/StoryCarousel";
+import { PostComposer } from "@/modules/feed/components/post/PostComposer";
+import { PostList } from "@/modules/feed/components/post/PostList";
+import { RightSidebar } from "@/modules/feed/components/layout/RightSidebar";
 
 export function FeedPage() {
   const darkMode = useFeedUiStore((s) => s.darkMode);

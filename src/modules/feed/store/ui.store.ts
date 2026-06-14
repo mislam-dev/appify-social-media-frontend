@@ -14,7 +14,7 @@ interface FeedUiState {
 }
 
 export const useFeedUiStore = create<FeedUiState>((set) => ({
-  darkMode: false,
+  darkMode: true,
   openDropdown: null,
   toggleDarkMode: () => set((s) => ({ darkMode: !s.darkMode })),
   toggleDropdown: (id) =>

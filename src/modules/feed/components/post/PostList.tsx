@@ -1,9 +1,9 @@
 "use client";
 
-import { LoadingSkeleton } from "@/components/feedback/LoadingSkeleton";
 import { ErrorBoundary } from "@/components/feedback/ErrorBoundary";
+import { LoadingSkeleton } from "@/components/feedback/LoadingSkeleton";
+import { PostCard } from "@/modules/feed/components/post/PostCard";
 import { usePosts } from "@/modules/feed/hooks/usePosts";
-import { PostCard } from "@/modules/feed/components/PostCard";
 
 export function PostList() {
   const {

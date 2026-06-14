@@ -3,8 +3,8 @@
 import { AppImage } from "@/components/ui/AppImage";
 import { cn } from "@/lib/utils/cn";
 import { SearchIcon } from "@/modules/feed/components/icons";
-import { NotificationDropdown } from "@/modules/feed/components/NotificationDropdown";
-import { ProfileDropdown } from "@/modules/feed/components/ProfileDropdown";
+import { NotificationDropdown } from "@/modules/feed/components/layout/NotificationDropdown";
+import { ProfileDropdown } from "@/modules/feed/components/layout/ProfileDropdown";
 import Link from "next/link";
 import { useState } from "react";
 
