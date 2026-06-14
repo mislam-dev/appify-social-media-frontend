@@ -1,18 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { AppImage } from "@/components/ui/AppImage";
-import { RegisterSchema, type RegisterInput } from "@/modules/auth/types";
+import { ApiError } from "@/lib/api-client";
 import { useRegister } from "@/modules/auth/hooks/useAuthMutations";
+import { ValidationErrorResponse } from "@/modules/shared/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { type RegisterInput, RegisterSchema } from "../schema/register-schema";
+import { AuthInput } from "./AuthInput";
 
 export function RegisterForm() {
-  const register = useRegister();
+  const { mutate: register, isError, error, isPending } = useRegister();
   const {
     register: field,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<RegisterInput>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -25,11 +31,27 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = handleSubmit((data) => register.mutate(data));
+  const onSubmit = handleSubmit((data) => register(data));
+
+  useEffect(() => {
+    if (isError) {
+      if (error instanceof ApiError) {
+        const res = error.details as ValidationErrorResponse;
+        res.errors.forEach((err) => {
+          setError(err.property as any, {
+            message: err.constraints.join(", "),
+          });
+        });
+      }
+    }
+  }, [isError, error, setError]);
 
   return (
     <>
-      <button type="button" className="_social_registration_content_btn _mar_b40">
+      <button
+        type="button"
+        className="_social_registration_content_btn _mar_b40"
+      >
         <AppImage
           src="/assets/images/google.svg"
           alt="Google"
@@ -43,95 +65,51 @@ export function RegisterForm() {
         <span>Or</span>
       </div>
 
-      <form className="_social_registration_form" onSubmit={onSubmit} noValidate>
+      <form
+        className="_social_registration_form"
+        onSubmit={onSubmit}
+        noValidate
+      >
         <div className="row">
           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="_social_registration_form_input _mar_b14">
-              <label className="_social_registration_label _mar_b8">
-                First name
-              </label>
-              <input
-                type="text"
-                className="form-control _social_registration_input"
-                aria-invalid={errors.first_name ? true : undefined}
-                {...field("first_name")}
-              />
-              {errors.first_name ? (
-                <span className="mt-1 block text-xs text-rose-500">
-                  {errors.first_name.message}
-                </span>
-              ) : null}
-            </div>
+            <AuthInput
+              label="First name"
+              type="text"
+              error={errors.first_name?.message}
+              {...field("first_name")}
+            />
           </div>
           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="_social_registration_form_input _mar_b14">
-              <label className="_social_registration_label _mar_b8">
-                Last name
-              </label>
-              <input
-                type="text"
-                className="form-control _social_registration_input"
-                aria-invalid={errors.last_name ? true : undefined}
-                {...field("last_name")}
-              />
-              {errors.last_name ? (
-                <span className="mt-1 block text-xs text-rose-500">
-                  {errors.last_name.message}
-                </span>
-              ) : null}
-            </div>
+            <AuthInput
+              label="Last name"
+              type="text"
+              error={errors.last_name?.message}
+              {...field("last_name")}
+            />
           </div>
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div className="_social_registration_form_input _mar_b14">
-              <label className="_social_registration_label _mar_b8">Email</label>
-              <input
-                type="email"
-                className="form-control _social_registration_input"
-                aria-invalid={errors.email ? true : undefined}
-                {...field("email")}
-              />
-              {errors.email ? (
-                <span className="mt-1 block text-xs text-rose-500">
-                  {errors.email.message}
-                </span>
-              ) : null}
-            </div>
+            <AuthInput
+              label="Email"
+              type="email"
+              error={errors.email?.message}
+              {...field("email")}
+            />
           </div>
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div className="_social_registration_form_input _mar_b14">
-              <label className="_social_registration_label _mar_b8">
-                Password
-              </label>
-              <input
-                type="password"
-                className="form-control _social_registration_input"
-                aria-invalid={errors.password ? true : undefined}
-                {...field("password")}
-              />
-              {errors.password ? (
-                <span className="mt-1 block text-xs text-rose-500">
-                  {errors.password.message}
-                </span>
-              ) : null}
-            </div>
+            <AuthInput
+              label="Password"
+              type="password"
+              error={errors.password?.message}
+              {...field("password")}
+            />
           </div>
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div className="_social_registration_form_input _mar_b14">
-              <label className="_social_registration_label _mar_b8">
-                Repeat Password
-              </label>
-              <input
-                type="password"
-                className="form-control _social_registration_input"
-                aria-invalid={errors.confirm_password ? true : undefined}
-                {...field("confirm_password")}
-              />
-              {errors.confirm_password ? (
-                <span className="mt-1 block text-xs text-rose-500">
-                  {errors.confirm_password.message}
-                </span>
-              ) : null}
-            </div>
+            <AuthInput
+              label="Repeat Password"
+              type="password"
+              error={errors.confirm_password?.message}
+              {...field("confirm_password")}
+            />
           </div>
         </div>
 
@@ -159,25 +137,15 @@ export function RegisterForm() {
           </div>
         </div>
 
-        {register.isError ? (
-          <div className="row">
-            <div className="col-12">
-              <p className="mb-2 text-sm text-rose-500">
-                {(register.error as Error).message}
-              </p>
-            </div>
-          </div>
-        ) : null}
-
         <div className="row">
           <div className="col-lg-12 col-md-12 col-xl-12 col-sm-12">
             <div className="_social_registration_form_btn _mar_t40 _mar_b60">
               <button
                 type="submit"
                 className="_social_registration_form_btn_link _btn1"
-                disabled={register.isPending}
+                disabled={isPending}
               >
-                {register.isPending ? "Creating account…" : "Register now"}
+                {isPending ? "Creating account…" : "Register now"}
               </button>
             </div>
           </div>

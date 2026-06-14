@@ -1,9 +1,9 @@
+import { tokenStorage } from "@/lib/token-storage";
 import axios, {
   AxiosError,
   type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from "axios";
-import { tokenStorage } from "@/lib/token-storage";
 
 export interface ApiEnvelope<T> {
   status_code: number;
@@ -26,7 +26,7 @@ export class ApiError extends Error {
 }
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -55,17 +55,9 @@ apiClient.interceptors.response.use(
       : (raw ?? error.message ?? "Unexpected network error");
 
     if (status === 401) {
-
       tokenStorage.clear();
     }
 
     return Promise.reject(new ApiError(message, status, error.response?.data));
   },
 );
-
-export async function request<T>(
-  fn: (client: AxiosInstance) => Promise<{ data: ApiEnvelope<T> }>,
-): Promise<T> {
-  const res = await fn(apiClient);
-  return res.data.data;
-}

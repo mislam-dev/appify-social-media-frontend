@@ -24,3 +24,28 @@ export interface Paginated<T> {
   items: T[];
   meta: PaginationMeta;
 }
+
+export type ApiResponse<T> = {
+  status_code: number;
+  message: string;
+  data: T | object | [object];
+  meta?: Record<string, string | number>;
+  _links?: Record<string, string>;
+};
+
+export type ValidationErrorResponse = {
+  request_id: string;
+  status_code: number;
+  message: string;
+  errors: {
+    property: string;
+    constraints: string[];
+  }[];
+};
+
+export type NonValidationErrorResponse = {
+  error: string;
+  message: string;
+  request_id: string;
+  status_code: number;
+};

@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { tokenStorage, type AuthTokens } from "@/lib/token-storage";
-import { authService } from "@/modules/auth/services/auth.service";
+import { authApi } from "@/modules/auth/api/auth.api";
 import type { User } from "@/modules/shared/types";
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       try {
-        const profile = await authService.me();
+        const profile = await authApi.me();
         if (!active) return;
         setUser(profile);
         setStatus("authenticated");
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const setSession = useCallback(async (tokens: AuthTokens) => {
     tokenStorage.set(tokens);
     setStatus("loading");
-    const profile = await authService.me();
+    const profile = await authApi.me();
     setUser(profile);
     setStatus("authenticated");
   }, []);

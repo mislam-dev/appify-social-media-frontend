@@ -1,15 +1,15 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/auth-provider";
 import { AUTH_ROUTES } from "@/lib/auth-options";
-import { authService } from "@/modules/auth/services/auth.service";
+import { authApi } from "@/modules/auth/api/auth.api";
 import type {
   LoginInput,
   RegisterInput,
   RegisterPayload,
 } from "@/modules/auth/types";
+import { useAuth } from "@/providers/auth-provider";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export function useLogin() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export function useLogin() {
   return useMutation({
     mutationKey: ["auth", "login"],
     mutationFn: async (input: LoginInput) => {
-      const tokens = await authService.login(input);
+      const tokens = await authApi.login(input);
       await setSession(tokens);
       return tokens;
     },
@@ -40,7 +40,7 @@ export function useRegister() {
         email: input.email,
         password: input.password,
       };
-      return authService.register(payload);
+      return authApi.register(payload);
     },
     onSuccess: () => {
       router.push(AUTH_ROUTES.login);

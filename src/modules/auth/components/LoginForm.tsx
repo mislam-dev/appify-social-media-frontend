@@ -1,25 +1,56 @@
 "use client";
 
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { AppImage } from "@/components/ui/AppImage";
-import { LoginSchema, type LoginInput } from "@/modules/auth/types";
+import { ApiError } from "@/lib/api-client";
 import { useLogin } from "@/modules/auth/hooks/useAuthMutations";
+import {
+  NonValidationErrorResponse,
+  ValidationErrorResponse,
+} from "@/modules/shared/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { LoginInput, LoginSchema } from "../schema/login-schema";
+import { AuthInput } from "./AuthInput";
 
 export function LoginForm() {
-  const login = useLogin();
+  const { mutate: login, error, isError, isPending } = useLogin();
+  const [manualError, setManualError] = useState<string>("");
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: "", password: "", remember: true },
   });
 
-  const onSubmit = handleSubmit((data) => login.mutate(data));
+  const onSubmit = handleSubmit((data) => {
+    setManualError("");
+    login(data);
+  });
 
+  useEffect(() => {
+    if (isError) {
+      if (error instanceof ApiError) {
+        if (error.status === 400) {
+          const res = error.details as ValidationErrorResponse;
+          res.errors.forEach((err) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            setError(err.property as any, {
+              message: err.constraints.join(", "),
+            });
+          });
+        } else {
+          const { message } = error.details as NonValidationErrorResponse;
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setManualError(message || "");
+        }
+      }
+    }
+  }, [isError, error, setError]);
   return (
     <>
       <button type="button" className="_social_login_content_btn _mar_b40">
@@ -35,40 +66,30 @@ export function LoginForm() {
       <div className="_social_login_content_bottom_txt _mar_b40">
         <span>Or</span>
       </div>
-
+      {manualError && (
+        <div className="mb-3 text-left">
+          <span className="mt-2 block text-sm text-red-600">{manualError}</span>
+        </div>
+      )}
       <form className="_social_login_form" onSubmit={onSubmit} noValidate>
         <div className="row">
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div className="_social_login_form_input _mar_b14">
-              <label className="_social_login_label _mar_b8">Email</label>
-              <input
-                type="email"
-                className="form-control _social_login_input"
-                aria-invalid={errors.email ? true : undefined}
-                {...register("email")}
-              />
-              {errors.email ? (
-                <span className="mt-1 block text-xs text-rose-500">
-                  {errors.email.message}
-                </span>
-              ) : null}
-            </div>
+            <AuthInput
+              label="Email"
+              type="email"
+              variant="login"
+              error={errors.email?.message}
+              {...register("email")}
+            />
           </div>
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div className="_social_login_form_input _mar_b14">
-              <label className="_social_login_label _mar_b8">Password</label>
-              <input
-                type="password"
-                className="form-control _social_login_input"
-                aria-invalid={errors.password ? true : undefined}
-                {...register("password")}
-              />
-              {errors.password ? (
-                <span className="mt-1 block text-xs text-rose-500">
-                  {errors.password.message}
-                </span>
-              ) : null}
-            </div>
+            <AuthInput
+              label="Password"
+              type="password"
+              variant="login"
+              error={errors.password?.message}
+              {...register("password")}
+            />
           </div>
         </div>
 
@@ -96,11 +117,11 @@ export function LoginForm() {
           </div>
         </div>
 
-        {login.isError ? (
+        {isError ? (
           <div className="row">
             <div className="col-12">
               <p className="mb-2 text-sm text-rose-500">
-                {(login.error as Error).message}
+                {(error as Error).message}
               </p>
             </div>
           </div>
@@ -112,9 +133,9 @@ export function LoginForm() {
               <button
                 type="submit"
                 className="_social_login_form_btn_link _btn1"
-                disabled={login.isPending}
+                disabled={isPending}
               >
-                {login.isPending ? "Signing in…" : "Login now"}
+                {isPending ? "Signing in…" : "Login now"}
               </button>
             </div>
           </div>
@@ -125,7 +146,8 @@ export function LoginForm() {
         <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
           <div className="_social_login_bottom_txt">
             <p className="_social_login_bottom_txt_para">
-              Dont have an account? <Link href="/register">Create New Account</Link>
+              Dont have an account?{" "}
+              <Link href="/register">Create New Account</Link>
             </p>
           </div>
         </div>
