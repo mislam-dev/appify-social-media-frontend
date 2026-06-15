@@ -17,4 +17,5 @@ export {
   useTogglePostLike,
   useCommentLikes,
   useToggleCommentLike,
+  useCommentLikeState,
 } from "@/modules/feed/hooks/useLikes";

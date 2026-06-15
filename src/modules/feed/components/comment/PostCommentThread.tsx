@@ -5,45 +5,19 @@ import { cn } from "@/lib/utils/cn";
 import { timeAgo } from "@/lib/utils/formatters";
 import { CommentBox } from "@/modules/feed/components/comment/CommentBox";
 import { CommentReply } from "@/modules/feed/components/comment/CommentReply";
-import {
-  useCommentLikes,
-  useToggleCommentLike,
-} from "@/modules/feed/hooks/useLikes";
+import { useCommentLikeState } from "@/modules/feed/hooks/useLikes";
 import { useCreateReply, useReplies } from "@/modules/feed/hooks/useReplies";
 import type { Comment } from "@/modules/feed/types";
 import { useUser } from "@/modules/user/hooks/useUser";
-import { useAuth } from "@/providers/auth-provider";
 import Link from "next/link";
 import { useState } from "react";
 
 export function PostCommentThread({ comment }: { comment: Comment }) {
   const createReply = useCreateReply(comment.id);
-  const toggleLike = useToggleCommentLike(comment.id);
 
-  const { user: currentUser } = useAuth();
-  const { data: likes } = useCommentLikes(comment.id, true);
-
-  const likeCount = likes?.meta.total ?? likes?.items.length ?? 0;
-  const serverLiked = Boolean(
-    currentUser && likes?.items.some((l) => l.user.id === currentUser.id),
+  const { liked, displayCount, toggleLike, isPending } = useCommentLikeState(
+    comment.id,
   );
-
-  const [liked, setLiked] = useState(serverLiked);
-  const [prevServerLiked, setPrevServerLiked] = useState(serverLiked);
-  if (serverLiked !== prevServerLiked) {
-    setPrevServerLiked(serverLiked);
-    setLiked(serverLiked);
-  }
-
-  const displayCount = likeCount + (liked === serverLiked ? 0 : liked ? 1 : -1);
-
-  const handleToggleLike = () => {
-    setLiked((v) => !v);
-    toggleLike.mutate(undefined, {
-      onSuccess: (res) => setLiked(res.liked),
-      onError: () => setLiked((v) => !v),
-    });
-  };
 
   const { data: author, isError: authorIsError } = useUser(comment.user_id);
   const authorName = authorIsError
@@ -70,62 +44,67 @@ export function PostCommentThread({ comment }: { comment: Comment }) {
         </Link>
       </div>
       <div className="_comment_area">
-        <div className="_comment_details !min-w-fit !max-w-full !mb-2">
-          <div className="_comment_details_top">
-            <div className="_comment_name">
-              <Link href="#">
-                <h4 className="_comment_name_title">{authorName}</h4>
-              </Link>
+        <div className="">
+          <div className="_comment_details !min-w-fit !max-w-full !mb-2">
+            <div className="_comment_details_top">
+              <div className="_comment_name">
+                <Link href="#">
+                  <h4 className="_comment_name_title">{authorName}</h4>
+                </Link>
+              </div>
             </div>
-          </div>
-          <div className="_comment_status">
-            <p className="_comment_status_text">
-              <span>{comment.text}</span>
-            </p>
+            <div className="_comment_status">
+              <p className="_comment_status_text">
+                <span>{comment.text}</span>
+              </p>
+            </div>
           </div>
           {/* comment stats */}
-          {displayCount > 0 && (
-            <div className="_total_reactions">
-              <div className="_total_react">
-                <span className="_reaction_like">
-                  <LikeIcon />
-                </span>
-                <span className="_reaction_heart">
-                  <HeartIcon />
-                </span>
+          <div className="flex justify-between px-2 pt-1 items-center">
+            <div className="_comment_reply ">
+              <div className="">
+                <ul className="_comment_reply_list gap-x-1">
+                  <li>
+                    <span
+                      role="button"
+                      aria-pressed={liked}
+                      aria-disabled={isPending}
+                      style={{ cursor: "pointer" }}
+                      className={cn(liked && "_reaction_active")}
+                      onClick={toggleLike}
+                    >
+                      {liked ? "Liked" : "Like"}.
+                    </span>
+                  </li>
+                  <li>
+                    <span onClick={() => setIsReplyOpen(!isReplyOpen)}>
+                      Reply
+                    </span>
+                  </li>
+                  <li>
+                    <span>Share</span>
+                  </li>
+                  <li>
+                    <span className="_time_link">
+                      .{timeAgo(comment.created_at)}
+                    </span>
+                  </li>
+                </ul>
               </div>
-              <span className="_total">{displayCount}</span>
             </div>
-          )}
-          <div className="_comment_reply">
-            <div className="">
-              <ul className="_comment_reply_list gap-x-1">
-                <li>
-                  <span
-                    role="button"
-                    aria-pressed={liked}
-                    style={{ cursor: "pointer" }}
-                    className={cn(liked && "_reaction_active")}
-                    onClick={handleToggleLike}
-                  >
-                    {liked ? "Liked" : "Like"}.
+            {displayCount > 0 && (
+              <div className="flex">
+                <div className="_total_react flex gap-2">
+                  <span className="_reaction_like">
+                    <LikeIcon />
                   </span>
-                </li>
-                <li>
-                  <span onClick={() => setIsReplyOpen(!isReplyOpen)}>
-                    Reply
+                  <span className="_reaction_heart">
+                    <HeartIcon />
                   </span>
-                </li>
-                <li>
-                  <span>Share</span>
-                </li>
-                <li>
-                  <span className="_time_link">
-                    .{timeAgo(comment.created_at)}
-                  </span>
-                </li>
-              </ul>
-            </div>
+                </div>
+                <span className="_total">{displayCount}</span>
+              </div>
+            )}
           </div>
         </div>
         {isReplyOpen && (

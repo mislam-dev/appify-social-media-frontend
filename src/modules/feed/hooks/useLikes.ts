@@ -4,12 +4,14 @@ import { commentLikesApi } from "@/modules/feed/api/comment-likes.api";
 import { postLikesApi } from "@/modules/feed/api/post-likes.api";
 import { feedKeys } from "@/modules/feed/hooks/queryKeys";
 import { Paginated } from "@/modules/shared/types";
+import { useAuth } from "@/providers/auth-provider";
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useState } from "react";
 import { LikeEntity } from "../api";
 
 export function usePostLikes(postId: string, enabled = false) {
@@ -65,4 +67,42 @@ export function useToggleCommentLike(commentId: string) {
       });
     },
   });
+}
+
+/**
+ * Encapsulates the like state for a single comment or reply: fetches the
+ * likers, derives whether the current user has liked it, and exposes an
+ * optimistic toggle. Reused by both comments and replies (a reply is a
+ * comment with its own id, so the same `commentLikes` endpoint applies).
+ */
+export function useCommentLikeState(commentId: string) {
+  const { user: currentUser } = useAuth();
+  const { data: likes } = useCommentLikes(commentId, true);
+  const toggle = useToggleCommentLike(commentId);
+
+  const likeCount = likes?.meta.total ?? likes?.items.length ?? 0;
+  const serverLiked = Boolean(
+    currentUser && likes?.items.some((l) => l.user.id === currentUser.id),
+  );
+
+  // Local optimistic mirror, re-synced during render when the server value
+  // changes (React's recommended alternative to an effect).
+  const [liked, setLiked] = useState(serverLiked);
+  const [prevServerLiked, setPrevServerLiked] = useState(serverLiked);
+  if (serverLiked !== prevServerLiked) {
+    setPrevServerLiked(serverLiked);
+    setLiked(serverLiked);
+  }
+
+  const displayCount = likeCount + (liked === serverLiked ? 0 : liked ? 1 : -1);
+
+  const toggleLike = () => {
+    setLiked((v) => !v);
+    toggle.mutate(undefined, {
+      onSuccess: (res) => setLiked(res.liked),
+      onError: () => setLiked((v) => !v),
+    });
+  };
+
+  return { liked, displayCount, toggleLike, isPending: toggle.isPending };
 }
