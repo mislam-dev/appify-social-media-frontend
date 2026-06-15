@@ -4,11 +4,12 @@ import { AppImage } from "@/components/ui/AppImage";
 import { cn } from "@/lib/utils/cn";
 import { timeAgo } from "@/lib/utils/formatters";
 import { CommentBox } from "@/modules/feed/components/comment/CommentBox";
+import { CommentReply } from "@/modules/feed/components/comment/CommentReply";
 import {
   useCommentLikes,
   useToggleCommentLike,
 } from "@/modules/feed/hooks/useLikes";
-import { useCreateReply } from "@/modules/feed/hooks/useReplies";
+import { useCreateReply, useReplies } from "@/modules/feed/hooks/useReplies";
 import type { Comment } from "@/modules/feed/types";
 import { useUser } from "@/modules/user/hooks/useUser";
 import { useAuth } from "@/providers/auth-provider";
@@ -47,9 +48,13 @@ export function PostCommentThread({ comment }: { comment: Comment }) {
   const { data: author, isError: authorIsError } = useUser(comment.user_id);
   const authorName = authorIsError
     ? "Unknown"
-    : `${author?.first_name ?? ""} ${author?.last_name ?? ""}`;
+    : `${author?.first_name ?? ""} ${author?.last_name ?? ""}`.trimEnd() ||
+      "Unknown";
 
   const [isReplyOpen, setIsReplyOpen] = useState<boolean>(false);
+
+  const { data: replies } = useReplies(comment.id, true);
+  const replyList = replies?.items ?? [];
 
   return (
     <div className="_comment_main mt-4">
@@ -124,10 +129,20 @@ export function PostCommentThread({ comment }: { comment: Comment }) {
           </div>
         </div>
         {isReplyOpen && (
-          <CommentBox
-            pending={createReply.isPending}
-            onSubmit={(text) => createReply.mutate({ text })}
-          />
+          <>
+            {/* Replies — a single level of nesting beneath the comment. */}
+            {replyList.length > 0 && (
+              <div className="_comment_replies ml-5">
+                {replyList.map((reply) => (
+                  <CommentReply key={reply.id} reply={reply} />
+                ))}
+              </div>
+            )}
+            <CommentBox
+              pending={createReply.isPending}
+              onSubmit={(text) => createReply.mutate({ text })}
+            />
+          </>
         )}
       </div>
     </div>

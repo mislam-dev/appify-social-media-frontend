@@ -19,19 +19,22 @@ export function PostUserWithDate({
   if (isError) {
     return <p className="text-rose-500">Something went wrong!</p>;
   }
+  const authorName =
+    (data?.first_name + " " + data?.last_name).trimEnd() || "Unknown";
+
   return (
     <div className="_feed_inner_timeline_post_box">
       <div className="_feed_inner_timeline_post_box_image">
         <AppImage
-          src={`https://ui-avatars.com/api/?name=${data?.first_name + " " + data?.last_name}&size=48`}
-          alt={`${data?.first_name} ${data?.last_name}`}
+          src={`https://ui-avatars.com/api/?name=${authorName}&size=48`}
+          alt={authorName}
           width={48}
           height={48}
           className="_post_img"
         />
       </div>
       <div className="_feed_inner_timeline_post_box_txt">
-        <h4 className="_feed_inner_timeline_post_box_title">{`${data?.first_name} ${data?.last_name}`}</h4>
+        <h4 className="_feed_inner_timeline_post_box_title">{authorName}</h4>
         <p className="_feed_inner_timeline_post_box_para">
           {timeAgo(created_at)} .{" "}
           <Link href="#">{status === "private" ? "Private" : "Public"}</Link>

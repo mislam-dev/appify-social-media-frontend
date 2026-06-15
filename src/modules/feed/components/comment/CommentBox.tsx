@@ -20,7 +20,7 @@ export function CommentBox({
   const [value, setValue] = useState("");
 
   return (
-    <div className="_feed_inner_comment_box">
+    <div className="_feed_inner_comment_box mt-1">
       <form
         className="_feed_inner_comment_box_form"
         onSubmit={(e) => {

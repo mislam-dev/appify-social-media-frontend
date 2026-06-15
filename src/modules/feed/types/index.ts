@@ -26,7 +26,6 @@ export const PostSchema = z.object({
   status: PostStatus,
   created_at: z.string(),
   updated_at: z.string(),
-  user: PostAuthorSchema,
 });
 export type Post = z.infer<typeof PostSchema>;
 

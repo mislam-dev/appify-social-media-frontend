@@ -1,5 +1,4 @@
 import type { Paginated } from "@/modules/shared/types";
-import { fullName } from "@/lib/utils/formatters";
 import { CommentSchema, type Comment } from "@/modules/feed/types";
 import {
   ApiReplySchema,
@@ -12,17 +11,7 @@ import { del, getList, patchOne, postOne } from "./http";
 
 /** Replies share the comment shape; reuse the UI `Comment` view-model. */
 export function mapReply(raw: ApiReply): Comment {
-  return CommentSchema.parse({
-    id: raw.id,
-    author: {
-      id: raw.user?.id ?? raw.user_id,
-      name: fullName(raw.user?.first_name, raw.user?.last_name) || "User",
-      avatar: "/assets/images/comment_img.png",
-    },
-    body: raw.text,
-    reactions: 0,
-    created_at: raw.created_at,
-  });
+  return CommentSchema.parse(raw);
 }
 
 const parseReply = (raw: unknown) => mapReply(ApiReplySchema.parse(raw));

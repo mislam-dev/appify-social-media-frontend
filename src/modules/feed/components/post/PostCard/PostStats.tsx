@@ -13,12 +13,10 @@ export function PostStats({ postId }: { postId: string }) {
   const likeCount = likes?.flat.length ?? 0;
   const commentCount = comments?.meta.total ?? comments?.items.length ?? 0;
 
-  const avatars = (likes?.flat ?? [])
-    .slice(0, 9)
-    .map(
-      (item) =>
-        `https://ui-avatars.com/api/?name=${item.user.first_name + " " + item.user.last_name}`,
-    );
+  const avatars = (likes?.flat ?? []).slice(0, 9).map((item) => {
+    const authorName = item.user ? `unknown`.trimEnd() : "Unknown";
+    return `https://ui-avatars.com/api/?name=${authorName}`;
+  });
 
   return (
     <div className="_feed_inner_timeline_total_reacts _padd_r24 _padd_l24 _mar_b26">
