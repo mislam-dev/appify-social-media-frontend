@@ -2,7 +2,6 @@ import type {
   FeedEvent,
   FriendItem,
   NotificationItem,
-  Post,
   RecommendedPerson,
   Story,
   SuggestedPerson,
@@ -123,7 +122,7 @@ const baseComment = {
   created_at: new Date(Date.now() - 21 * 60_000).toISOString(),
 };
 
-export const MOCK_POSTS: Post[] = Array.from({ length: 6 }).map((_, i) => ({
+export const MOCK_POSTS = Array.from({ length: 6 }).map((_, i) => ({
   id: `post-${i + 1}`,
   author: { id: "u-karim", name: "Karim Saif", avatar: img("post_img.png") },
   title: "-Healthy Tracking App",

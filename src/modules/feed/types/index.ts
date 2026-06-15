@@ -4,35 +4,29 @@ export const PostStatus = z.enum(["public", "private"]);
 export type PostStatus = z.infer<typeof PostStatus>;
 
 export const PostAuthorSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  avatar: z.string(),
+  first_name: z.string(),
+  last_name: z.string(),
 });
 export type PostAuthor = z.infer<typeof PostAuthorSchema>;
 
 export const CommentSchema = z.object({
   id: z.string(),
-  author: PostAuthorSchema,
-  body: z.string(),
-  reactions: z.number().default(0),
+  text: z.string(),
+  image: z.string().nullable().optional(),
+  user_id: z.string(),
   created_at: z.string(),
 });
 export type Comment = z.infer<typeof CommentSchema>;
 
 export const PostSchema = z.object({
   id: z.string(),
-  author: PostAuthorSchema,
-  title: z.string().optional(),
+  user_id: z.string(),
   content: z.string(),
-  image: z.string().nullable().optional(),
-  status: PostStatus.default("public"),
+  image: z.string().nullable().default(null),
+  status: PostStatus,
   created_at: z.string(),
-  reactions: z.number().default(0),
-  reaction_avatars: z.array(z.string()).default([]),
-  comment_count: z.number().default(0),
-  share_count: z.number().default(0),
-  previous_comments: z.number().default(0),
-  comments: z.array(CommentSchema).default([]),
+  updated_at: z.string(),
+  user: PostAuthorSchema,
 });
 export type Post = z.infer<typeof PostSchema>;
 

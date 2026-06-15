@@ -1,10 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import { AppImage } from "@/components/ui/AppImage";
 import { CommentMicIcons } from "@/modules/feed/components/icons";
+import { useState } from "react";
 
-export function CommentBox({ avatar = "/assets/images/comment_img.png" }: { avatar?: string }) {
+interface CommentBoxProps {
+  avatar?: string;
+  /** Called with the trimmed text on submit. The parent owns the mutation
+   *  (create comment / reply), keeping this component presentational. */
+  onSubmit?: (text: string) => void;
+  pending?: boolean;
+}
+
+export function CommentBox({
+  avatar = "/assets/images/comment_img.png",
+  onSubmit,
+  pending = false,
+}: CommentBoxProps) {
   const [value, setValue] = useState("");
 
   return (
@@ -13,6 +25,9 @@ export function CommentBox({ avatar = "/assets/images/comment_img.png" }: { avat
         className="_feed_inner_comment_box_form"
         onSubmit={(e) => {
           e.preventDefault();
+          const text = value.trim();
+          if (!text || pending) return;
+          onSubmit?.(text);
           setValue("");
         }}
       >
@@ -27,11 +42,14 @@ export function CommentBox({ avatar = "/assets/images/comment_img.png" }: { avat
             />
           </div>
           <div className="_feed_inner_comment_box_content_txt">
-            <textarea
+            <input
               className="form-control _comment_textarea"
               placeholder="Write a comment"
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              disabled={pending}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setValue(e.target.value);
+              }}
             />
           </div>
         </div>
