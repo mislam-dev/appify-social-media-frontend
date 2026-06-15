@@ -1,5 +1,6 @@
 export { feedKeys } from "@/modules/feed/hooks/queryKeys";
 export { usePosts, useCreatePost } from "@/modules/feed/hooks/usePosts";
+export { useUploadImage } from "@/modules/feed/hooks/useUpload";
 export {
   useComments,
   useCreateComment,

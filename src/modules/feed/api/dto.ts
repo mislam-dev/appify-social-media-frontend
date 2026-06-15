@@ -23,10 +23,12 @@ export const ApiPostSchema = z.object({
   status: z.enum(["public", "private"]).default("public"),
   created_at: z.string(),
   updated_at: z.string().optional(),
-  user: z.object({
-    first_name: z.string(),
-    last_name: z.string(),
-  }),
+  user: z
+    .object({
+      first_name: z.string(),
+      last_name: z.string(),
+    })
+    .optional(),
 });
 export type ApiPost = z.infer<typeof ApiPostSchema>;
 

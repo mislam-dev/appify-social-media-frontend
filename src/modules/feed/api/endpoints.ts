@@ -2,6 +2,8 @@ export const feedEndpoints = {
   posts: "/posts",
   post: (id: string) => `/posts/${id}`,
 
+  fileUpload: "/file-upload",
+
   postComments: (postId: string) => `/posts/${postId}/comments`,
   postComment: (postId: string, id: string) =>
     `/posts/${postId}/comments/${id}`,
