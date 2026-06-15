@@ -1,5 +1,5 @@
 import { apiClient, type ApiEnvelope } from "@/lib/api-client";
-import type { Paginated, PaginationMeta } from "@/modules/shared/types";
+import type { Paginated } from "@/modules/shared/types";
 
 /* Network helper shared by the feed api modules. The global axios client
    (`lib/api-client`) stays generic; this adapts its envelope into the
@@ -14,11 +14,13 @@ export async function getList<Raw, Out>(
   map: (raw: Raw) => Out,
 ): Promise<Paginated<Out>> {
   const res = await apiClient.get<ApiEnvelope<Raw[]>>(url, { params });
-  const meta = (res.data.meta ?? {}) as Partial<PaginationMeta>;
+  const meta = (res.data.meta ?? {}) as Record<string, unknown>;
 
   const page = Number(meta.page ?? params.page ?? 1);
   const limit = Number(meta.limit ?? params.limit ?? 10);
   const total = Number(meta.total ?? res.data.data.length);
+  const isLiked =
+    typeof meta.is_liked === "boolean" ? meta.is_liked : undefined;
   return {
     items: res.data.data.map(map),
     meta: {
@@ -26,6 +28,7 @@ export async function getList<Raw, Out>(
       limit,
       total,
       total_pages: Math.max(1, Math.ceil(total / Math.max(1, limit))),
+      ...(isLiked !== undefined && { is_liked: isLiked }),
     },
   };
 }

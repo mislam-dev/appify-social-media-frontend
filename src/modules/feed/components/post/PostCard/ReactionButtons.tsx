@@ -2,20 +2,19 @@
 
 import { cn } from "@/lib/utils/cn";
 import { usePostLikes, useTogglePostLike } from "@/modules/feed/hooks/useLikes";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function ReactionButtons({ postId }: { postId: string }) {
-  const [liked, setLiked] = useState(false);
-
   const { mutate: togglePostLike, isPending } = useTogglePostLike(postId);
+  const { data: likes } = usePostLikes(postId, true);
 
-  const { data: likes, isSuccess } = usePostLikes(postId, true);
-
-  useEffect(() => {
-    if (isSuccess && likes) {
-      // console.log(likes);
-    }
-  }, [likes, isSuccess]);
+  const serverLiked = Boolean(likes?.isLiked);
+  const [liked, setLiked] = useState(serverLiked);
+  const [prevServerLiked, setPrevServerLiked] = useState(serverLiked);
+  if (serverLiked !== prevServerLiked) {
+    setPrevServerLiked(serverLiked);
+    setLiked(serverLiked);
+  }
 
   return (
     <div className="_feed_inner_timeline_reaction">

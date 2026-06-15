@@ -4,7 +4,6 @@ import { commentLikesApi } from "@/modules/feed/api/comment-likes.api";
 import { postLikesApi } from "@/modules/feed/api/post-likes.api";
 import { feedKeys } from "@/modules/feed/hooks/queryKeys";
 import { Paginated } from "@/modules/shared/types";
-import { useAuth } from "@/providers/auth-provider";
 import {
   useInfiniteQuery,
   useMutation,
@@ -28,6 +27,8 @@ export function usePostLikes(postId: string, enabled = false) {
       return {
         ...data,
         flat: data.pages.flatMap((p) => p.items),
+        isLiked: data.pages[0]?.meta.is_liked ?? false,
+        likeCount: data.pages[0]?.meta.total ?? 0,
       };
     },
   });
@@ -76,14 +77,11 @@ export function useToggleCommentLike(commentId: string) {
  * comment with its own id, so the same `commentLikes` endpoint applies).
  */
 export function useCommentLikeState(commentId: string) {
-  const { user: currentUser } = useAuth();
   const { data: likes } = useCommentLikes(commentId, true);
   const toggle = useToggleCommentLike(commentId);
 
   const likeCount = likes?.meta.total ?? likes?.items.length ?? 0;
-  const serverLiked = Boolean(
-    currentUser && likes?.items.some((l) => l.user.id === currentUser.id),
-  );
+  const serverLiked = Boolean(likes?.meta.is_liked);
 
   // Local optimistic mirror, re-synced during render when the server value
   // changes (React's recommended alternative to an effect).

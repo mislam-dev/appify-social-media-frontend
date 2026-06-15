@@ -16,6 +16,7 @@ export const PaginationMetaSchema = z.object({
   limit: z.number(),
   total: z.number(),
   total_pages: z.number(),
+  is_liked: z.boolean().optional(),
 });
 
 export type PaginationMeta = z.infer<typeof PaginationMetaSchema>;
