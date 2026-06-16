@@ -111,6 +111,25 @@ src/
 - **Providers** compose top-down: `AppProvider` wraps `QueryProvider` and
   `AuthProvider` and is mounted once in the root layout.
 
+## Design decisions & trade-offs
+
+- **TanStack Query for data fetching and caching.** It owns all server state —
+  fetching, caching, invalidation, infinite scroll, and mutations — giving the
+  app fine-grained, client-side control over cache lifetimes and refetching
+  without hand-rolling that logic.
+- **Deliberately not using Next.js's built-in caching / SSR.** Leaning on the
+  Next.js fetch cache and server rendering would add architectural complexity
+  and couple the app tightly to Vercel's runtime. This product needs neither SEO
+  nor server-side rendering, so the cost isn't worth it — a client-driven SPA
+  over TanStack Query keeps the architecture simpler and portable.
+- **Pragmatic fidelity to the original design.** Some details of the source
+  template were intentionally dropped where they added effort without
+  meaningful value, in favour of a clean, maintainable component structure.
+- **Likes now, reactions later.** Only the "like" reaction is wired up for the
+  current scope, but the `ReactionButtons` component and the underlying
+  toggle/like API are structured so additional reaction types (love, haha,
+  etc.) can be added without reworking the architecture.
+
 ## Scripts
 
 ```bash
