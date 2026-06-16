@@ -36,7 +36,7 @@ export function LoginForm() {
     if (isError) {
       if (error instanceof ApiError) {
         if (error.status === 400) {
-          const res = error.details as ValidationErrorResponse;
+          const res = error?.details as ValidationErrorResponse;
           res.errors.forEach((err) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             setError(err.property as any, {
@@ -44,9 +44,10 @@ export function LoginForm() {
             });
           });
         } else {
-          const { message } = error.details as NonValidationErrorResponse;
+          const { message = "" } =
+            (error?.details as NonValidationErrorResponse) || {};
           // eslint-disable-next-line react-hooks/set-state-in-effect
-          setManualError(message || "");
+          setManualError(message);
         }
       }
     }

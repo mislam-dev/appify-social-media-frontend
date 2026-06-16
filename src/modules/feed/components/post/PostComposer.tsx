@@ -19,6 +19,7 @@ export function PostComposer() {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const [uploadedUrlBackup, setUploadedUrlBackup] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<"public" | "private">("public");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const createPost = useCreatePost();
@@ -79,13 +80,14 @@ export function PostComposer() {
     createPost.mutate(
       {
         content: trimmed,
-        status: "public",
+        status,
         image: uploadedUrl ?? undefined,
       },
       {
         onSuccess: () => {
           setContentBackup("");
           setUploadedUrlBackup("");
+          setStatus("public");
         },
         onError: () => {
           setContent(contentBackup);
@@ -208,7 +210,16 @@ export function PostComposer() {
             </div>
           ))}
         </div>
-        <div className="_feed_inner_text_area_btn">
+        <div
+          className="_feed_inner_text_area_btn"
+          style={{ display: "flex", alignItems: "center", gap: 10 }}
+        >
+          <PrivacyToggle
+            status={status}
+            onToggle={() =>
+              setStatus((s) => (s === "public" ? "private" : "public"))
+            }
+          />
           <button
             type="button"
             className="_feed_inner_text_area_btn_link"
@@ -244,7 +255,16 @@ export function PostComposer() {
               </div>
             ))}
           </div>
-          <div className="_feed_inner_text_area_btn">
+          <div
+            className="_feed_inner_text_area_btn"
+            style={{ display: "flex", alignItems: "center", gap: 10 }}
+          >
+            <PrivacyToggle
+              status={status}
+              onToggle={() =>
+                setStatus((s) => (s === "public" ? "private" : "public"))
+              }
+            />
             <button
               type="button"
               className="_feed_inner_text_area_btn_link"
@@ -260,6 +280,72 @@ export function PostComposer() {
     </div>
   );
 }
+
+function PrivacyToggle({
+  status,
+  onToggle,
+}: {
+  status: "public" | "private";
+  onToggle: () => void;
+}) {
+  const isPrivate = status === "private";
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={isPrivate}
+      title={
+        isPrivate
+          ? "Private — only you can see this post"
+          : "Public — everyone can see this post"
+      }
+      className={cn(
+        "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium",
+        isPrivate
+          ? "border-amber-300 bg-amber-50 text-amber-700"
+          : "border-gray-300 bg-gray-50 text-gray-600",
+      )}
+    >
+      {isPrivate ? <LockIcon /> : <GlobeIcon />}
+      <span>{isPrivate ? "Private" : "Public"}</span>
+    </button>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+    </svg>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <rect
+        x="4.5"
+        y="10.5"
+        width="15"
+        height="10"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <path
+        d="M8 10.5V8a4 4 0 118 0v2.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+    </svg>
+  );
+}
+
 const PhotoIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"

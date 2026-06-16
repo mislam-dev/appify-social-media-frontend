@@ -34,9 +34,9 @@ export function ReactionButtons({ postId }: { postId: string }) {
         )}
       >
         <span className="_feed_inner_timeline_reaction_link">
-          <span className="flex gap-x-2">
-            <HaHaIcon />
-            Haha
+          <span className="flex gap-x-2 items-center">
+            <LikeIcon />
+            Like
           </span>
         </span>
       </button>
@@ -57,6 +57,32 @@ export function ReactionButtons({ postId }: { postId: string }) {
         </span>
       </button>
     </div>
+  );
+}
+
+function LikeIcon({
+  size = 24,
+  color = "currentColor",
+}: {
+  size?: number | string;
+  color?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 220 220"
+      role="img"
+      aria-label="Like"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title>Like</title>
+      <path
+        d="M86 96 L86 196 L168 196 C178 196 186 189 188 179 L200 119 C202 108 193 98 182 98 L132 98 L132 60 C132 45 120 33 105 33 C98 33 92 37 90 44 L86 96 Z"
+        fill={color}
+      />
+      <rect x="44" y="96" width="34" height="100" rx="6" fill={color} />
+    </svg>
   );
 }
 

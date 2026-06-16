@@ -15,6 +15,7 @@ export function PostCard({ post }: { post: Post }) {
         <div className="_feed_inner_timeline_post_top">
           <PostUserWithDate
             created_at={post.created_at}
+            status={post.status}
             userId={post.user_id}
           />
 
