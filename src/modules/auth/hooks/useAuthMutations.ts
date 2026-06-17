@@ -2,14 +2,12 @@
 
 import { AUTH_ROUTES } from "@/lib/auth-options";
 import { authApi } from "@/modules/auth/api/auth.api";
-import type {
-  LoginInput,
-  RegisterInput,
-  RegisterPayload,
-} from "@/modules/auth/types";
+
 import { useAuth } from "@/providers/auth-provider";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { LoginInput } from "../schema/login-schema";
+import { RegisterInput, RegisterPayload } from "../schema/register-schema";
 
 export function useLogin() {
   const router = useRouter();

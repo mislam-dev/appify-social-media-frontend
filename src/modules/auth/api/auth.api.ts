@@ -1,7 +1,9 @@
 import { apiClient, type ApiEnvelope } from "@/lib/api-client";
 import type { AuthTokens } from "@/lib/token-storage";
-import type { LoginInput, RegisterPayload } from "@/modules/auth/types";
+
 import type { User } from "@/modules/shared/types";
+import { LoginInput } from "../schema/login-schema";
+import { RegisterPayload } from "../schema/register-schema";
 
 class AuthApi {
   async login(input: LoginInput): Promise<AuthTokens> {
